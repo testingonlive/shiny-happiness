@@ -4,6 +4,10 @@ module.exports = {
     "ecmaVersion": 6,
     "sourceType": "module",
   },
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
   "rules": {
     /**
      * Strict mode
