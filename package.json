@@ -1,0 +1,19 @@
+{
+  "name": "example-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup --format iife --globals jquery:jQuery --sourcemap inline -- src/index.js > dist/bundle.js",
+    "lint": "eslint ./src *.js; exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^3.5.0",
+    "eslint-config-airbnb-es5": "^1.0.9",
+    "rollup": "^0.35.12"
+  }
+}
