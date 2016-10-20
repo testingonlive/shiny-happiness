@@ -3,44 +3,45 @@ import $ from 'jquery';
 import getLocn from './services/getLocn';
 import getWeatherData from './services/getWeatherData';
 
-import forcastView from './views/forcastView';
+import WeatherModel from './models/WeatherModel';
 
-import {get, tempConvert} from './helpers/misc';
+import forcastView from './views/forcastView';
+import loadingView from './views/loadingView';
+
+import {
+    get,
+    tempConvert,
+    templateRenderer
+} from './helpers/misc';
+
+var renderForcast = templateRenderer( '#forcast', forcastView );
+// render loading message
+templateRenderer( '#forcast', loadingView )();
+
+var weatherModel = new WeatherModel();
+
+weatherModel.on( 'update', renderForcast );
 
 // get the location
 getLocn()
-  // then get the weather data
-  .then(function(latLng) {
-    return getWeatherData(latLng.lat, latLng.lng);
-  })
-  // parse the response into JSON
-  .then($.parseJSON)
-  // do something useful with the data
-  .then(function(data) {
-    var curTemp = {
-      temp: get(data, ['query', 'results', 'channel', 'item', 'condition', 'temp']),
-      format: 'celsius'
-    };
-    var text = get(data, ['query', 'results', 'channel', 'item', 'condition', 'text']);
-    var $forcast = $( '#forcast' );
+    // then get the weather data
+    .then(function(latLng) {
+        return getWeatherData(latLng.lat, latLng.lng);
+    })
+    // do something useful with the data
+    .then(function(data) {
 
-    $forcast.html(
-      forcastView({
-        desc: text,
-        temp: curTemp.temp,
-        format: 'celsius'
-      })
-    );
+        weatherModel.set({
+            desc: get(data, ['query', 'results', 'channel', 'item', 'condition', 'text']),
+            temp: get(data, ['query', 'results', 'channel', 'item', 'condition', 'temp']),
+            format: 'celsius'
+        });
 
-    $(document).on('click', '#js-temp-toggle', function() {
-      curTemp = tempConvert(curTemp);
+        $(document).on('click', '#js-temp-toggle', function() {
+            weatherModel.set(tempConvert({
+                temp: weatherModel.get( 'temp' ),
+                format: weatherModel.get( 'format')
+            }));
+        });
 
-      $forcast.html(
-        forcastView({
-          desc: text,
-          temp: curTemp.temp,
-          format: curTemp.format
-        })
-      );
     });
-  });
